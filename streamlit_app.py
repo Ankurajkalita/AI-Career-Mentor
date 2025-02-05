@@ -1,6 +1,6 @@
 import streamlit as st
 import ollama
-import json
+
 
 # Load Scholarship Data (Demo)
 scholarships = [
