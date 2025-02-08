@@ -18,7 +18,7 @@ scholarships = [
 st.title("🎓 Edunity - AI Mentor for Students")
 
 # Sidebar
-menu = ["AI Career Mentor", "Free Learning", "Scholarship Matcher", "AI Resume Builder"]
+menu = ["AI Career Mentor", "Free Learning", "Scholarship Matcher", "AI Resume Builder", "AI-Powered Personalized Learning", "Micro-Jobs & Support"]
 choice = st.sidebar.selectbox("Choose a Feature", menu)
 
 # AI Career Mentor with Chat History
@@ -27,6 +27,8 @@ if choice == "AI Career Mentor":
     
     if "messages" not in st.session_state:
         st.session_state["messages"] = [{"role": "assistant", "content": "Ask about *careers*, _skills_, or _study plans_:"}]
+    
+    
     
     # Display message history
     for msg in st.session_state.messages:
@@ -50,6 +52,19 @@ if choice == "AI Career Mentor":
         st.chat_message("assistant", avatar="🤖").write_stream(generate_response)
         st.session_state.messages.append({"role": "assistant", "content": st.session_state["full_message"]})
 
+
+# AI-Powered Personalized Learning
+elif choice == "AI-Powered Personalized Learning":
+    st.subheader("🧠 Personalized AI Learning")
+    
+    study_hours = st.slider("Select available daily study time (in hours):", 1, 5, 2)
+    st.write(f"📚 AI will generate a study plan for {study_hours} hours per day.")
+    
+    if st.button("Generate Study Plan"):
+        response = ollama.chat(model="llama3", messages=[{"role": "user", "content": f"Create a study plan for a student with only {study_hours} hours per day."}])
+        st.write("📖 Study Plan:")
+        st.write(response["message"]["content"])
+    
 # Free Learning Resources
 elif choice == "Free Learning":
     st.subheader("📚 Free Learning Resources")
@@ -78,6 +93,25 @@ elif choice == "Free Learning":
     for name, link in subjects[sub]:
         st.markdown(f"🔗 [{name}]({link})")
 
+# Micro-Jobs & Support
+elif choice == "Micro-Jobs & Support":
+    st.subheader("🛠️ Financial & Accessibility Support")
+    
+    # Micro-jobs section
+    st.write("💼 **Skill-Based Micro-Jobs**")
+    st.write("Find small remote jobs to earn money while studying!")
+    st.markdown("🔗 [Browse Jobs](https://www.freelancer.com/)https://www.mastersportal.com/articles/3139/work-from-dorm-12-online-jobs-for-students-around-the-world.html")
+
+    # Location-based free education centers
+    st.write("📍 **Find Local Learning Centers**")
+    
+    user_location = st.text_input("Enter your city or area (e.g., 'New Delhi, India')")
+    
+    if user_location:
+        maps_url = f"https://www.google.com/maps/search/free+tuition+center+near+{user_location.replace(' ', '+')}"
+        st.markdown(f"🔗 [Find Nearby Free Education Centers]({maps_url})")
+    else:
+        st.write("Enter a location to search for free education centers.")
 
 # Smart Scholarship Matcher
 elif choice == "Scholarship Matcher":
@@ -125,4 +159,3 @@ elif choice == "AI Resume Builder":
                 st.text_area("Your AI-Generated Resume:", resume_text, height=300)
         else:
             st.error("❌ Please fill in at least Name, Education, and Skills!")
-
