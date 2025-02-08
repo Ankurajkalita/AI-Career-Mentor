@@ -87,38 +87,37 @@ elif choice == "Scholarship Matcher":
     else:
         st.write("❌ No matching scholarships found.")
 
-# AI Resume Builder
-elif choice == "AI Resume Builder":
-    st.subheader("📄 AI Resume Builder")
-    st.write("🛠️ This feature will generate resumes based on your skills & achievements!")
+def generate_resume(name, education, skills, experience, projects):
+    """Generate a professional resume using Llama 3 AI."""
+    prompt = f"""
+    Create a professional resume for the following details:
+    - Name: {name}
+    - Education: {education}
+    - Skills: {skills}
+    - Experience: {experience}
+    - Projects: {projects}
 
-   def generate_resume(name, education, skills, experience, projects):
-        """Generate a professional resume using Llama 3 AI."""
-        prompt = f"""
-        Create a professional resume for the following details:
-        - Name: {name}
-        - Education: {education}
-        - Skills: {skills}
-        - Experience: {experience}
-        - Projects: {projects}
-    
-        Format it as a well-structured resume with sections and proper formatting.
-        """
-        response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-        return response["message"]["content"]
-           
-        # User Inputs
-        name = st.text_input("Full Name")
-        education = st.text_area("Education (Degrees, Certifications)")
-        skills = st.text_area("Key Skills (Comma-separated)")
-        experience = st.text_area("Work Experience (Job Titles, Companies, Years)")
-        projects = st.text_area("Projects (Describe major projects)")
-    
-        if st.button("Generate Resume"):
-            if name and education and skills:
-                with st.spinner("Generating Resume..."):
-                    resume_text = generate_resume(name, education, skills, experience, projects)
-                    st.success("✅ Resume Generated!")
-                    st.text_area("Your AI-Generated Resume:", resume_text, height=300)
-            else:
+    Format it as a well-structured resume with sections and proper formatting.
+    """
+    response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
+    return response["message"]["content"]
+
+# Streamlit UI for Resume Builder
+if choice == "AI Resume Builder":
+    st.subheader("📄 AI Resume Builder")
+
+    # User Inputs
+    name = st.text_input("Full Name")
+    education = st.text_area("Education (Degrees, Certifications)")
+    skills = st.text_area("Key Skills (Comma-separated)")
+    experience = st.text_area("Work Experience (Job Titles, Companies, Years)")
+    projects = st.text_area("Projects (Describe major projects)")
+
+    if st.button("Generate Resume"):
+        if name and education and skills:
+            with st.spinner("Generating Resume..."):
+                resume_text = generate_resume(name, education, skills, experience, projects)
+                st.success("✅ Resume Generated!")
+                st.text_area("Your AI-Generated Resume:", resume_text, height=300)
+        else:
             st.error("❌ Please fill in at least Name, Education, and Skills!")
