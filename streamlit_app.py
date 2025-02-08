@@ -15,40 +15,37 @@ scholarships = [
 
 
 # Title
-st.title("🎓 Edunity - AI Mentor for Students")
+st.title("🎓 EduBridge - AI Mentor for Students")
 
-# Sidebar
-menu = ["AI Career Mentor", "Free Learning", "Scholarship Matcher", "AI Resume Builder"]
+# Sidebar Menu
+menu = ["AI Career Mentor", "AI Resume Builder"]
 choice = st.sidebar.selectbox("Choose a Feature", menu)
 
 # AI Career Mentor with Chat History
 if choice == "AI Career Mentor":
-    st.subheader("🤖 AI Career Mentor")
-    
+    st.subheader("🤖 AI Career Mentor (Powered by Llama 3)")
+
     if "messages" not in st.session_state:
-        st.session_state["messages"] = [{"role": "assistant", "content": "Ask about *careers*, _skills_, or _study plans_:"}]
-    
-    # Display message history
+        st.session_state["messages"] = [{"role": "assistant", "content": "How can I assist you today?"}]
+
+    # Display chat history
     for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.chat_message(msg["role"], avatar="👤").write(msg["content"])
-        else:
-            st.chat_message(msg["role"], avatar="🤖").write(msg["content"])
-    
-    # Token generator
+        st.chat_message(msg["role"], avatar="👤" if msg["role"] == "user" else "🤖").write(msg["content"])
+
+    # AI Response Generator
     def generate_response():
-        response = ollama.chat(model='llama3', stream=True, messages=st.session_state.messages)
+        response = ollama.chat(model="llama3", stream=True, messages=st.session_state.messages)
         for partial_resp in response:
-            token = partial_resp["message"]["content"]
-            st.session_state["full_message"] += token
-            yield token
-    
+            yield partial_resp["message"]["content"]
+
+    # User Input
     if prompt := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.chat_message("user", avatar="👤").write(prompt)
-        st.session_state["full_message"] = ""
-        st.chat_message("assistant", avatar="🤖").write_stream(generate_response)
-        st.session_state.messages.append({"role": "assistant", "content": st.session_state["full_message"]})
+        full_message = "".join(generate_response())
+        st.chat_message("assistant", avatar="🤖").write(full_message)
+        st.session_state.messages.append({"role": "assistant", "content": full_message})
+
 
 # Free Learning Resources
 elif choice == "Free Learning":
@@ -95,21 +92,21 @@ elif choice == "AI Resume Builder":
     st.subheader("📄 AI Resume Builder")
     st.write("🛠️ This feature will generate resumes based on your skills & achievements!")
 
-    def generate_resume(name, education, skills, experience, projects):
-        """Generate a professional resume using Llama 3 AI."""
-        prompt = f"""
-        Create a professional resume for the following details:
-        - Name: {name}
-        - Education: {education}
-        - Skills: {skills}
-        - Experience: {experience}
-        - Projects: {projects}
+   def generate_resume(name, education, skills, experience, projects):
+    """Generate a professional resume using Llama 3 AI."""
+    prompt = f"""
+    Create a professional resume for the following details:
+    - Name: {name}
+    - Education: {education}
+    - Skills: {skills}
+    - Experience: {experience}
+    - Projects: {projects}
 
-        Format it as a well-structured resume with sections and proper formatting.
-        """
-        response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-        return response["message"]["content"]
-
+    Format it as a well-structured resume with sections and proper formatting.
+    """
+    response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
+    return response["message"]["content"]
+       
     # User Inputs
     name = st.text_input("Full Name")
     education = st.text_area("Education (Degrees, Certifications)")
